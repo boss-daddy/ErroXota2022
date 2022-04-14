@@ -7,12 +7,12 @@ title_size = 125
 conteudo_size = 100
 
 
-def padronizar_conteudo(conteudo, width):
+def padronizar_conteudo(conteudo, width, e_titulo=False):
     wrapper = textwrap.TextWrapper(width=width)
     word_list = wrapper.wrap(text=conteudo)
     caption_new = ""
     for ii in word_list[:-1]:
-        caption_new = caption_new + ii + "\n"
+        caption_new = caption_new + ii + "\n" + ("" if e_titulo else "\n")
     caption_new += word_list[-1]
     return caption_new
 
@@ -28,10 +28,10 @@ def adicionar_margem(pil_img, top, right, bottom, left, color):
 
 def junta_texto(img, titulo, conteudo, title, content):
     conteudo = padronizar_conteudo(conteudo, 38)
-    titulo = padronizar_conteudo(titulo, 35)
+    titulo = padronizar_conteudo(titulo, 33, e_titulo=True)
 
     content = padronizar_conteudo(content, 38)
-    title = padronizar_conteudo(title, 35)
+    title = padronizar_conteudo(title, 33, e_titulo=True)
 
     PAD = len(conteudo.split("\n") + titulo.split("\n")) * 200
     file = img.filename.split("/")
@@ -104,17 +104,28 @@ def pega_legendas(main_path):
     return [(*u, *j) for u, j in zip(legendas.items(), captions.items())]
 
 
-if __name__ == "__main__":
+def export_to_pdf():
+    main_path = "/Users/mariopokemon/Desktop/erroxota/sachete_de_férias/ErroXota2022/legendado/"
+    imagens = [
+        Image.open(main_path + 'legendada_'+f)
+        for f in sorted([k for k in os.listdir() if "rio" in k and ".jpg" in k])
+    ]
+    pdf_path = "/Users/mariopokemon/Desktop/erroxota/sachete_de_férias/ErroXota2022/RDJ2022.pdf"
+    imagens[0].save(
+        pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=imagens[1:]
+    )
+
+def constroi_fotos_legendadas():
     main_path = "/Users/mariopokemon/Desktop/erroxota/sachete_de_férias/ErroXota2022/"
     imagens = [
-        Image.open(main_path + f)
+        Image.open(main_path +f)
         for f in sorted([k for k in os.listdir() if "rio" in k and ".jpg" in k])
     ]
     todo = pega_legendas(main_path + "rio_comentario.txt")
-    # pdf_path = "/Users/mariopokemon/Desktop/rio/fotos/mar26_mar27.pdf"
-    # images[0].save(
-    #     pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
-    # )
     for img, texto in list(zip(imagens, todo)):
         print(img.filename.split("/")[-1])
         junta_texto(img, *texto)
+
+if __name__ == "__main__":
+    constroi_fotos_legendadas()
+    export_to_pdf()
