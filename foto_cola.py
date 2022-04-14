@@ -110,9 +110,14 @@ def export_to_pdf():
         Image.open(main_path + 'legendada_'+f)
         for f in sorted([k for k in os.listdir() if "rio" in k and ".jpg" in k])
     ]
-    pdf_path = "/Users/mariopokemon/Desktop/erroxota/sachete_de_férias/ErroXota2022/RDJ2022.pdf"
-    imagens[0].save(
-        pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=imagens[1:]
+    ox = []
+    for im in imagens:
+        metade = 0.5
+        out = im.resize( [int(metade * s) for s in im.size] )
+        ox += [out]
+    pdf_path = "/Users/mariopokemon/Desktop/erroxota/sachete_de_férias/ErroXota2022/RDJ--2022.pdf"
+    ox[0].save(
+        pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=ox[1:]
     )
 
 def constroi_fotos_legendadas():
